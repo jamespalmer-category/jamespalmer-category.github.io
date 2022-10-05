@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+     <head>
+         <title>Yugioh Cardmarket Data project - Report 1</title>
+         <link rel="stylesheet" href="/assets/css/style_colour.css"></link>
+         <meta name="viewport" content="width=device-width,initial-scale=1.0">
+     </head>
+
+
+     <body>
+        <nav>
+            <a href="/">Me</a> |
+            <a href="/mathematics/">Maths</a> |
+            <a href="/data_science/">Data Science</a> |
+            <a href="/football/">Football</a> |
+            <a href="/yugioh/">Yu-Gi-Oh</a> |
+            <a href="/cooking/">Cooking</a> |
+            <a href="/misc/">Other Stuff</a>
+        </nav>
+
+         <h1>Yugioh Cardmarket Data project - Report 1</h1>
+         <p>When I first made the brave jump from online ML courses to trying my hand at personal data projects (around February 2021), I tried to make a database of Yugioh cards and find their previous price data to try and predict how it would change in future.</p>
+         <p>Through spaghetti code, bad variable names and parsing from now unsupported sites, I had some form of data, however I never got round to doing anything with it/ uploading it to Kaggle (errors made this not possible, probably needs less folders when uploading).</p>
+         <p>Currently, I’m on my second/third iteration of the project. I am now parsing from supported sites, the code is clear and I have a good amount of data to play with. Enough to make predictions yet? I’m not so sure. Let us check out what we have and explain how Beautiful Soup works along the way.</p>
+        
+         <h2>TCG_Set.py</h2>
+
+         <p>A function to get us the links and datasets we want to play with! Feel free to download it <a href="cardmarket_prices_project_reports/TCG_Set_V3.py" download>here</a>.</p>
+         <p>It was made mainly using the powers of Pandas and Beautiful Soup. A healthy amount of Regex and os also help make our lives easier. We use Object Oriented Programming and define the TCG_set object. This is a good way for us to store a lot of information about the set simultaneously.</p>
+
+         <h3>Function input</h3>
+         <p>First, let us look at the input. We want a URL, however we need it specifically to be a TCG set page from the website <a href = "https://yugipedia.com/wiki/Yugipedia">Yugipedia</a>. The current iteration at the function at time of writing means it doesn’t work on every page we need it to, something I haven’t quite fixed yet. I can tell you it currently works on <i>most</i> of the sets from 2019 onwards. I need to bugfix some of these sets though.</p>
+
+         <h3>Beautiful Soup on Yugipedia</h3>
+         <p>Beautiful soup is a wonderful Python package that allows us to get the html details we want from most webpages we want. We also use the package “requests”. I must confess, I have no real idea what this does apart from “get” us a webpage. All I know is that the lines 14-16 presented below get me the html of most webpages.</p>
+        
+         <figure>
+            <img src="/assets/images/yugioh/TCG_set_screenshot_bs.png" alt = "TCG_Set Beautiful Soup" /><figcaption>Requests and Beautiful Soup used in lines 14-16</figcaption>
+         </figure>
+
+         <!-- Find how to quote html tags without fucking up the code, lines 42, 44, 46, 57, -->
+         <p>After we’ve got our ‘soup’ variable, we then get to search through the html and find parts of the page that we want for our analysis. For example, see line 19 and line 23. This will “find” the html line with the syntax <h1></h1>. In html, this is usually the title of the page. Google search will use this as the title of the page if you haven’t set a “title” variable in the html.</p>
+
+         <p>The “find” function from line 19 will just get us the html object. This has the special type “<class 'bs4.element.Tag'>”, which allows us to extract attributes of our html objects.</p>
+
+         <p>The “find_all” function from line 19 gives us a list of “<class 'bs4.element.Tag'>” typed objects. We can then run loops through the list to extract information from multiple elements at once!</p>
+
+         <p>Let us now inspect the important information that we get from an average Yugipedia set page – the table of cards.</p>
+
+         <figure>
+            <img src="/assets/images/yugioh/yugipedia_POTE_screenshot.png" alt = "Yugipedia POTE screenshot" /><figcaption>Power of the Elements' page on Yugipedia</figcaption>
+         </figure>
+
+         <p>What we want to inspect is how the table is set out. By seeing the html construction of the table, we can then use the “find_all” function to reconstruct this table using Pandas.</p>
+         <figure>
+            <img src="/assets/images/yugioh/yugipedia_POTE_screenshot_inspect.png" alt = "Yugipedia POTE screenshot inspect th" /><figcaption>Inspecting table headers on the Power of the Elements' page</figcaption>
+         </figure>
+
+         <figure>
+            <img src="/assets/images/yugioh/yugipedia_POTE_screenshot_inspect_2.png" alt = "Yugipedia POTE screenshot inspect td" /><figcaption>Inspecting table entries on the Power of the Elements' page</figcaption>
+         </figure>
+
+         <p>So we see that the <th> and <td> elements are going to be key to our reconstruction. Lets see how we deal with them in the code.</p>
+         
+
+         <p>By using the mod function in python “%”, we can then use the fact there are 4 columns in this conditional and split our list of table data into each of the four columns. At the end, we put these four lists into a Pandas dataframe. The same idea applies when we have 5/6 columns.</p>
+
+         <p>We use regular expressions in lines 55-57 to clean up the name of the card, as we will be using the card name in file names later.</p>
+
+         <h3>Set exceptions</h3>
+         <figure>
+            <img src="/assets/images/yugioh/TCG_set_exceptions.png" alt = "Set exceptions" /><figcaption>I love hard coding.</figcaption>
+         </figure>
+
+         <p>Lines 130-168 are my best attempts to circumvent issues I’ve found so far. Currently, we only learn how many cards a set has by taking the length of the tables we find on the Yugipedia page. This is not always the same amount of cards found on Cardmarket’s page. If a card has two different rarities in the same set, but a shared set code, then we have an extra card on Cardmarket.</p>
+         <p>Sometimes, our counting function gets away with counting the number of Cardmarket pages. However, we need to fix the times it doesn’t. Additionally, we need to make sure we use our set name to get the right page on Cardmarket’s website where every card from the set is listed in set code order. Most of the time, we just need to use Regular Expressions on our set name and put it at the end of a Cardmarket URL to use Beautiful Soup again. Sometimes though, the Cardmarket URL and the modified set name don’t match, so we have to watch out for that.</p>
+
+         <h3>Beautiful Soup on Cardmarket</h3>
+         <figure>
+            <img src="/assets/images/yugioh/TCG_set_cardmarket_bs.png" alt = "Parsing from Cardmarket" /><figcaption>Parsing from Cardmarket. Same principle as parsing Yugipedia.</figcaption>
+         </figure>
+         <p>This section works under the same principles as the above, we find what the html tags are for the sections of the table we want to extract and then reconstruct a table in python that will let us access each url later in the Cardmarket Price function. We make sure to use the url that lets us sort the cards by set code on Cardmarket, as that is the same way our first dataframe was ordered.</p>
+
+        <h3>Outputs of the Function</h3>
+        <p>Throughout the code screenshots, you will have noticed lines such as 13,20 and 67 which all have the format “self.X =”. For those unaware, this is how we get to store properties of an OOP instance. From our initiation of the function, we get the following:</p>
+
+        <ul>
+            <li>The url</li>
+            <li>The set name</li>
+            <li>The set content dataframe according to Yugipedia</li>
+            <li>The set content dataframe according to Cardmarket</li>
+            <li>The (usually) four-letter set code</li>
+            <li>The number of cards in the set according to Yugipedia</li>
+            <li>A function to save the set contents from both cardmarket and yugipedia to separate .csv files</li>
+            <li>A function to get the last 30 entries of Cardmarket price data for each card in the set into a .csv file, briefly expanded on below</li>
+        </ul>
+
+        <h3>Cardmarket price function</h3>
+        <p>Find this on lines 222 - 277. I made this around Christmas 2021 after buying a case of Maximum Gold to see what I could trade in from cards I didn’t want and trade out for the same value. I really need to remake this function because I can’t tell what it does and it looks really janky. Surprisingly enough though, it works like a charm so far!</p>
+
+        <h3>Current Common Issues</h3>
+        <ul>
+            <li>Sets whose Yugipedia pages have multiple tables with different numbers of columns cause issues.</li>
+            <li>Variance in Yugipedia pages can throw random issues at us when comparing to cardmarket</li>
+            <li>Names not corresponding to cardmarket urls</li>
+            <li>Some side sets love to have 4 versions of the same card, which doesn’t help when we try and count the number of Cardmarket pages we need to list through.</li>
+        </ul>
+
+        <p>As an additional fun fact, if you run the function that gets the price data and anyone on the same Wifi network as you tries to go onto Cardmarket at the same time, then the Cardmarket website will crash and you won’t be able to get any data until you stop and restart the function.</p>
+
+        <h3>Next Steps</h3>
+        <ul>
+            <li>Try to fix issues that occur on specific sets, making sure I get as much Data as I can (mainly from latest sets from the last few years – these are the ones that mainly impact the current metagame so change in price the most).</li>
+            <li>Make a function that will update a dataset that we already have with latest dates that we don’t have. Ideally, we would find a way to automate it (I’ve been recommended cron for linux, however I’m on windows. I could use my Linux powershell if I felt ambitious).</li>
+            <li>Find a way to uploading this to Kaggle. If I copy/paste the set directories and split them based on release year for sets, that should get us somewhere.</li>  
+        </ul>
+
+     </body>
+</html> 
