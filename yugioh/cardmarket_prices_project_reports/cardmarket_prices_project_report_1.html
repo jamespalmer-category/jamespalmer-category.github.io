@@ -23,9 +23,9 @@
          <p>Through spaghetti code, bad variable names and parsing from now unsupported sites, I had some form of data, however I never got round to doing anything with it/ uploading it to Kaggle (errors made this not possible, probably needs less folders when uploading).</p>
          <p>Currently, I’m on my second/third iteration of the project. I am now parsing from supported sites, the code is clear and I have a good amount of data to play with. Enough to make predictions yet? I’m not so sure. Let us check out what we have and explain how Beautiful Soup works along the way.</p>
         
-         <h2>TCG_Set.py</h2>
+         <h2>TCG_set.py</h2>
 
-         <p>A function to get us the links and datasets we want to play with! Feel free to download it <a href="TCG_Set_V3.py" download>here</a>.</p>
+         <p>A function to get us the links and datasets we want to play with! Feel free to download it <a href="TCG_set_V3.py" download>here</a>.</p>
          <p>It was made mainly using the powers of Pandas and Beautiful Soup. A healthy amount of Regex and os also help make our lives easier. We use Object Oriented Programming and define the TCG_set object. This is a good way for us to store a lot of information about the set simultaneously.</p>
 
          <h3>Function input</h3>
@@ -35,7 +35,7 @@
          <p>Beautiful soup is a wonderful Python package that allows us to get the html details we want from most webpages we want. We also use the package “requests”. I must confess, I have no real idea what this does apart from “get” us a webpage. All I know is that the lines 14-16 presented below get me the html of most webpages.</p>
         
          <figure>
-            <img src="/assets/images/yugioh/TCG_set_screenshot_bs.png" alt = "TCG_Set Beautiful Soup" /><figcaption>Requests and Beautiful Soup used in lines 14-16</figcaption>
+            <img src="/assets/images/yugioh/TCG_set_screenshot_bs.png" alt = "TCG_set Beautiful Soup" /><figcaption>Requests and Beautiful Soup used in lines 14-16</figcaption>
          </figure>
 
          <p>After we’ve got our ‘soup’ variable, we then get to search through the html and find parts of the page that we want for our analysis. For example, see line 19 and line 23. This will “find” the html line with the syntax &lt;h1&gt; &lt;\h1&gt;. In html, this is usually the title of the page. Google search will use this as the title of the page if you haven’t set a “title” variable in the html.</p>
