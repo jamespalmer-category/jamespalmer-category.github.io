@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+     <head>
+         <title>Revisiting Parsing Understat</title>
+         <link rel="stylesheet" href="/assets/css/style_colour.css"></link>
+         <meta name="viewport" content="width=device-width,initial-scale=1.0">
+     </head>
+
+     <body>
+         <header>
+            <nav>
+                <a href="/">Me</a> |
+                <a href="/mathematics/">Maths</a> |
+                <a href="/data_science/">Data Science</a> |
+                <a href="/football/">Football</a> |
+                <a href="/yugioh/">Yu-Gi-Oh</a> |
+                <a href="/cooking/">Cooking</a> |
+                <a href="/misc/">Other Stuff</a>
+            </nav>
+
+            <h1>Revisiting Parsing Understat</h1>
+
+         </header>
+         
+         <article>
+            <h2>Step 1: Inspecting </h2>
+            <p>I've heard it said before in software engineering circles that if you haven't looked at your code for a few months - it may as well have been written by someone else. I wrote this code over a year ago. 
+            I opened up the GitHub repo, checked the individual files and I felt like Gordan Ramsey going through mouldy food on Kitchen Nightmares. I've no idea what the code does, no idea what the files correspond to
+            and the code is certainly not written in the most concise way possible.</p>
+            <p>The best way for us to deal with this is to make a new GitHub repository, so that I can also present some wisdom regarding some best practices on coding professionally. To start, let us inspect how the file 
+            <i>understat_parsing.ipynb</i> operates.</p>
+
+            <h3>A Note on Jupyter Notebooks</h3>
+            <p>The .ipynb file indicates we're dealing with a python notebook, which is a combination of markdowns and python code. The major functionality difference from an .py file is that you can run the code cell-by-cell.
+            When studying at University, it is likely that if you cover any python, you will have come across a Jupyter Notebook. At University, there's a number of advantages to teaching using a notebook. You can more
+            effectively mark people's work when you just have to run notebooks as a teacher, as a student you can write markdowns to signpost your work and present answers more easily to a marker. However in production code,
+            you won't be using it. In Data Science specifically, it is useful for EDA nad potentially demonstrating your code to other people.
+            </p>
+
+            <figure>
+                <img src="/assets/images/football/revisiting_parsing_understat/report_1/Inspecting and diagnosing Understat Parsing 1.png" alt = "" /><figcaption>Mistakes even at the very begining...</figcaption>
+            </figure>
+
+            <ol>
+                <li>The packages that aren't used in the script have been used in the actual python file, hence why waste computation time importing them?</li>
+                <li>This was a random name because I couldn't find a sensible name in my head at the time. Names, generally, should indicate what the variable is. Remember, when coding professionally you will have others reviewing 
+                    your code.</li>
+                <li>The names here continue to give me no indication as to what is going on. Additionally, there are no comments as well. I also believe an in-house bs4 method might be better to deal with the json rather than this random
+                    string method that doesn't generalise well to other projects.
+                </li>
+                <li>I don't really know what these methods are doing and why we need the [1:-1] index specification. Worth looking into/ commenting.</li>
+            </ol>
+            
+            <figure>
+                <img src="/assets/images/football/revisiting_parsing_understat/report_1/Inspecting and diagnosing Understat Parsing 2.png" alt = "" /><figcaption>Oh deary me why is this so long</figcaption>
+            </figure>
+
+            <ol type = "1" start = "5">
+                <li>Where to start with this one? Far too long, it redefines an object that we have already defined in the 4th cell. It's far too long to read as well, there's no way we can't get this into a list comprehension.</li>
+                <li>Probably fine, however one might prefer to have the list of columns hard-carded in, then provide a list of the lists we have generated above. If that's currently unclear, we'll see what that means later.</li>
+                <li>To be honest, this looks fine. As a general note for this 'Team Data' section however, it should probably be in a different directory in the file. Additionally, you can add "##" at the start of a markdown
+                    in Jupyter Notebooks to make it a title.
+                </li>
+                <li>Same issues as 5. Code is a lot less readable when it's such a needless length. You could potentially argue that as list comprehensions aren't basic python, they lose readability in a way for less experienced colleagues.
+                    I would argue back that if you're working in a professional python team, then they are definitely knowledgable on list comprehensions.
+                </li>
+            </ol>
+
+            <figure>
+                <img src="/assets/images/football/revisiting_parsing_understat/report_1/Inspecting and diagnosing Understat Parsing 3.png" alt = "" /><figcaption>This should probably not be here</figcaption>
+            </figure>
+
+            <ol type = "1" start = "9">
+                <li>A note for this whole section as well, this should be put in a "feature engineering" file. Especially as this is not a part of the original table. We could definitely put the names of these columns in a for loop
+                    to make this more readable as well.
+                </li>
+                <li>This section could probably be cleaned up as well. I can't remember what is going on as well, I think it's combining these tables with the opponents stats at the time of making the table. An interesting feature!
+                    the other note worth giving to this is that in feature engineering, think about the type of data you'll be using. This is working towards predicting match outcomes, meaning that we're potentially dealing with 
+                    time series data. I didn't engineer these features at that time with this in mind.
+                </li>
+                <li>
+                    I wonder if cumsum has an in-house way of only counting the last five rows. If so, I imagine it works faster than this does.
+                </li>
+            </ol>
+
+            <figure>
+                <img src="/assets/images/football/revisiting_parsing_understat/report_1/Inspecting and diagnosing Understat Parsing 4.png" alt = "" /><figcaption>Not so bad, but a few notes here.</figcaption>
+            </figure>
+
+            <ol type = "1" start = "12">
+                <li>A config.py file basically lets us hard code a bunch of values we want to use in our code so we have it for later. Putting this list in potentially makes sense, but we want to save it for the config file.
+                </li>
+                <li>Always very reassuring when "BUG HERE" is found in the comments. No idea why we need to transpose the dataframe. We could also make it clear what the for loop is trying to achieve.
+                </li>
+            </ol>
+            
+            <figure>
+                <img src="/assets/images/football/revisiting_parsing_understat/report_1/Inspecting and diagnosing Understat Parsing 5.png" alt = "" /><figcaption></figcaption>
+            </figure>
+
+            <ol type = "1" start = "14">
+                <li>Same issues as 5 and 8.</li>
+            </ol>
+
+            <p>Some final notes! The general structure of the code here is quite messy. As we're in cells, it's fairly easy to bugfix if something goes wrong. In our rewrite, we will want to turn all of these cells into functions.
+                This will allow us to import each function into other files as modules, as well as let us debug easier as we'll know which function will have an error in when we run our progam in a central file. We'll spend the next
+                report showing off the improved code.
+            </p>
+         </article>
+     </body>
+</html>
