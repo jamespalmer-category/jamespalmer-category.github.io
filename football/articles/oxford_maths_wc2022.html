@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+     <head>
+         <title>Yugioh Cardmarket Data project</title>
+         <link rel="stylesheet" href="/assets/css/style_colour.css"></link>
+         <meta name="viewport" content="width=device-width,initial-scale=1.0">
+     </head>
+
+
+     <body>
+        <nav>
+            <a href="/">Me</a> |
+            <a href="/mathematics/">Maths</a> |
+            <a href="/data_science/">Data Science</a> |
+            <a href="/football/">Football</a> |
+            <a href="/yugioh/">Yu-Gi-Oh</a> |
+            <a href="/cooking/">Cooking</a> |
+            <a href="/misc/">Other Stuff</a>
+        </nav>
+
+        <h1>Comments on Oxford's Model for Predicting the World Cup</h1>
+
+        <article>
+            <p>Recently, in the intersection between the Data Science and football community, there’s been a popular video floating around from Oxford’s mathematics department. 
+            Dr Joshua Bull, a mathematical biology researcher, <a href = "https://www.maths.ox.ac.uk/node/61756">showed off his model and its predictions ahead of the world cup</a>.</p>
+            
+            <p>The video is very good in explaining how Data Science and statistics are applied to modern football; 
+            the models here are used by betting companies and scouting departments by top clubs (most notably, AC Milan, Arsenal, Liverpool) to make data-driven decisions in recruitment.</p>
+
+            <p>There is so much to explore and discuss in terms of what we can learn from how predictive modelling and data are used in football. With modern football being more and more of a business, 
+                a lot of the speedbumps and barriers we hear about from using data in football are also issues encountered when using data science in most other industries as well. </p>
+
+            <p>For now, I just want to add additional details to Dr Bull’s great talk! I would recommend having a watch of it first before reading the rest of this article.</p>
+
+            <p>Dr Bull is noted by this website as having won the 19/20 Fantasy Football competition, so he is clearly very knowledgeable on football predictions. 
+                However, predicting a league in some ways is different from predicting a tournament, which means you may have to make different assumptions to accommodate it. </p>
+
+            <p>In the Premier league, you have 38 games. This means that you can more reliably expect (by a heavy law of large numbers assumption) any initially anomalous behaviour to regress to the mean. 
+                For example, if Salah is not scoring but performing significantly well on xG, he is more likely to start meeting his xG numbers when we are predicting over 38 games, 
+                instead of crashing out after 3 group games of a world cup (as happened in 2018…).</p>
+
+            <p>Additionally, you might want to make different mathematical model to consider different game states. 
+                <a href = "https://www.youtube.com/watch?v=W0UuNZPwSr4&t=718s">An excellent video on Tifo IRL</a> recently explored Leeds United’s xG based on what the current scoreline was at the time of their xG.</p>
+            
+            <p>In addition to this, you may want to make different considerations based on whether the game is a knockout game or a group stage game. 
+                In England Vs USA, it is clear from his substitutions that Southgate was content with a draw. Were this a knockout game, this isn’t an option. 
+                Hence, England may have committed more players forward.</p>
+
+            <p>Something else Dr Bull’s talk did not have the time to cover was the concept of expected points. While we saw the xG of each team in his predictions, we did not see whether the xG was made up of a number 
+                of low xG opportunities, or a smaller number of high xG chances instead. </p>
+
+            <p>In the book “The xG Philosophy” by James Tippett, it details how the “expected points” metric is introduced to account for this. What it does is it takes all the shots of a certain game and simulates it many times 
+                using the probabilities we’ve inputted of a certain chance being scored, to then calculate how often each team would win as well as how often the match ends in a draw. We assign expected points to each team by then 
+                taking these probabilities of win/draw/lose and calculating the expected value with them (so 3/1/0 respectively for either team).</p>
+
+            <p>An example where this has given us a curious outcome is a match between Wolves and Arsenal from the 18/19 Premier League season. 
+                While Wolves won the game 3-1, Arsenal were very close to them in expected points. This was due to the fact that Arsenal scored from one higher xG chance, whereas Wolves scored three from lower xG chances.</p>
+
+            <p>Where some other papers and models have built on what Dr Bull’s talk described is by adjusting xG based on which players are likely to play. 
+                This is something that has been covered in more contemporary research and seems more relevant to this tournament in particular, considering the injuries that have come from a congested fixture schedule.</p>
+
+            <p>It is worth noting that predicting football results is very hard. That is the main take-home message I want you to come away with. From what I've heard from people who have researched this task,
+                you are lucky if you can get even about 65% accuracy with this task. Dr Bull's model looks very plausible, but it could easily turn out to be wrong in the most unexpected way. In Saudi Arabia Vs Argentina,
+                some models had Saudi Arabia at around 0.2 xG whereas Argentina had over 2 xG (NB - there are different models of xG due to how it is calculated). Nonetheless as a Maths grad and football enjoyer, 
+                I thought there was a lot of interesting stuff in Dr Bull's video! I look forward to seeing how well the predictions do.</p>
+        </article>
+        
+  
+     </body>
+</html>
