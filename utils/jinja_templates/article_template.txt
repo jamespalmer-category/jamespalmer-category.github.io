@@ -21,7 +21,7 @@
         <h1>{{article_dict.title}}</h1>
 
         <article>
-            {% for paragraph in article_dict.paragraphs%}<p>{{paragraph}}</p>
+            {% for paragraph in article_dict.paragraphs%}{% if paragraph[:4] != '<h2>'%}<p>{{paragraph}}</p>{% endif %}{% if paragraph[:4] == '<h2>'%}{{paragraph}}{% endif %}
             {% endfor %}
         </article>
         

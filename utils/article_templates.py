@@ -22,5 +22,5 @@ def render_article(template_path : str, inputs : Dict, output_path : str) -> Non
         file.write(article_html)
 
 if __name__ == "__main__":
-    input_ = article_preprocessing(Path(__file__).parent.joinpath('articles_to_process', 'Maths_Until_18_and_beyond.txt'), 'Maths Until 18 and Beyond')
+    input_ = article_preprocessing(Path(__file__).parent.joinpath('articles_to_process', 'revisiting_parsing_understat_2.txt'), 'Revisiting Parsing Understat part 2')
     render_article(str(Path(__file__).parent.joinpath('jinja_templates', 'article_template.txt')), input_, str(Path(__file__).parent.joinpath('rendered_templates', 'Maths_Until_18_and_Beyond.html')))
