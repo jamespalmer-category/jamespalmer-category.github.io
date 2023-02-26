@@ -21,7 +21,7 @@
         <h1>{{article_dict.title}}</h1>
 
         <article>
-            {% for paragraph in article_dict.paragraphs%}{% if paragraph[:4] != '<h2>'%}<p>{{paragraph}}</p>{% endif %}{% if paragraph[:4] == '<h2>'%}{{paragraph}}{% endif %}
+            {% for paragraph in article_dict.paragraphs%}{% if paragraph[:4] != '<h2>' and paragraph != '[image]'%}<p>{{paragraph}}</p>{% endif %}{% if paragraph[:4] == '<h2>'%}{{paragraph}}{% endif %}{% if paragraph == '[image]'%}{{<img src="" alt = ""/><figcaption></figcaption>|replace("<", "&lt;")|replace(">", "&gt;")}}{% endif %}
             {% endfor %}
         </article>
         
