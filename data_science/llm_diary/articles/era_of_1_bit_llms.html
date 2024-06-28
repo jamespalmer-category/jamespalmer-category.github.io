@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>era_of_1_bit_llms</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+</head>
+<body>
+<nav id="TOC">
+<ul>
+<li><a href="#the-era-of-1-bit-llms-all-large-language-models-are-in-1.58-bits">The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits</a><ul>
+<li><a href="#the-idea-and-why-we-need-small-memory-llms">The idea and why we need small-memory LLMs</a></li>
+<li><a href="#addition-is-all-you-need">Addition is all you need</a></li>
+<li><a href="#initial-results">Initial results</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="the-era-of-1-bit-llms-all-large-language-models-are-in-1.58-bits">The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits</h1>
+<p><a href="https://arxiv.org/pdf/2402.17764.pdf">The original paper</a></p>
+<p>Something interesting dropped very recently, the idea that not only could we use ternery values of 1,0,-1 for every weight in an LLM to save memory, but also the fact that this can still preserve a very good level of performance as well.</p>
+<p>The paper pulls no punches when it comes to blowing its own trumpet, titling its first section “The era of 1-bit LLMs” and introducing BitNet b1.58.</p>
+<h2 id="the-idea-and-why-we-need-small-memory-llms">The idea and why we need small-memory LLMs</h2>
+<p>The idea of 1 bit LLMs had already been floated around, where each value would be 1 or -1. The issue with this idea was that the LLMs sucked after doing such a thing.</p>
+<p>As well, ideas in the past for LLMOps solutions to save memory had involved changing the weight from float16 (float values that take up 16 bytes of memory) to 8/4 bytes in inference time.</p>
+<p>There is an issue, however, which is that a 7 billion parameter model is still taking up 4 bytes per parameter. Therefore, we’ll still end up with a model whose size is 28 GB.</p>
+<p>Of course, for researchers this doesn’t necessarily matter. When pushing for state-of-the-art and given all the cloud computing resources in the world, you can basically store what you like no matter how big.</p>
+<p>For someone trying to deploy an LLM on an app however, you’ve got to be considerate of a user’s phone space, your server space and the fact that if you want inference to take place user-side then you’ll most likely be dealing with a CPU. Hence why performance optimization is researched on many different platforms.</p>
+<h2 id="addition-is-all-you-need">Addition is all you need</h2>
+<p>What manages to speed up the training and inferences of the ‘1.58 bit’ LLMs is the fact that now we’re only dealing with 0,1,-1, we don’t have to worry about matrix multiplication due to the lack of numbers involved. We’re only doing addition and subtraction instead.</p>
+<p>To reflect this in code, instead of using nn.Linear from PyTorch, a bitLinear layer is used instead. Additionally, the paper suggests instead of using GPUs which are made specifically for quick matrix calculations, a new hardware specialising in these equations could be made instead.</p>
+<p>It is also worth noting that activation functions are now limited to 8 bit instead, with a rounding equation used (I don’t fully understand how it works - unsure why it doesn’t end with 1 every time) to determine the new weights.</p>
+<h2 id="initial-results">Initial results</h2>
+<p>Using LLaMA as a benchmark, the results look incredible. One that popped out to me was the 71x decrease in energy consumption of BitNet b1.58.</p>
+<p>Additionally, compared to StableLM-3B, BitNet b1.58 3B is highly competitive when it comes to QA when both models are trained with 2K tokens.</p>
+<p>Other metrics, like latency and throughput, show very promising results as well.</p>
+</body>
+</html>

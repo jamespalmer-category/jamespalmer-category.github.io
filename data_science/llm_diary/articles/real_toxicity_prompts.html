@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>real_toxicity_prompts</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <script src="/usr/lib/nodejs/katex/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    var mathElements = document.getElementsByClassName("math");
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") { katex.render(texText.data, mathElements[i], { displayMode: mathElements[i].classList.contains("display"), throwOnError: false } );
+    }}});</script>
+  <link rel="stylesheet" href="/usr/lib/nodejs/katex/dist/katex.min.css" />
+</head>
+<body>
+<nav id="TOC">
+<ul>
+<li><a href="#real-toxicity-prompts-paper">Real Toxicity Prompts Paper</a><ul>
+<li><a href="#the-dataset">The Dataset</a></li>
+<li><a href="#the-models">The Models</a></li>
+<li><a href="#can-we-detoxify-these-models">Can we detoxify these models?</a></li>
+<li><a href="#interesting-notes-from-the-paper">Interesting Notes from the paper</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="real-toxicity-prompts-paper">Real Toxicity Prompts Paper</h1>
+<p><a href="https://arxiv.org/pdf/2009.11462.pdf">The original paper</a></p>
+<p>Detecting what text is “toxic” is a really hard task for humans – let alone for computers. Various attempts have been made to try and get adequate toxicity detectors back to the pre-GPT3 era.</p>
+<p>One of the biggest datasets that is used by Google to prevent Gemini from toxicity is “Real Toxicity Prompts” from the Allen School in the University of Washington. It’s thus seen as a go-to for training on this sort of task.</p>
+<p>Notably, it was first developed in 2020, showing that the team behind it were ahead of the curve on this issue. A call is made in the intro for care to be taken during pre-training, which is definitely still something worth considering even today.</p>
+<h2 id="the-dataset">The Dataset</h2>
+<p>100K prompts were taken from Open-WebText Corpus, which is a corpus built from sites whose links can be found on Reddit. 21,744 Toxic prompts and 77,272 non-toxic prompts were gathered. These sentences were split into “prompt” and “continuation” and scored separately for how toxic they were.</p>
+<p>How were they scored? They were scored using Perspective API, which is an API used by sites like the New York times to monitor their comments sections. Is Perspective API perfect? Not Really, it has a habit (admitted by the paper itself) of taking words themselves and mainly classifying sentences as toxic based on those individual words.</p>
+<p>This means that the model doesn’t lack the robustness that a lot of other models do lack, however it does make it very strict in terms of what it does think is actually toxic. Additionally, I’m not sure how much illegal activity is considered in the dataset, particularly for more technical/financial crimes.</p>
+<p>The idea of the paper’s experiment was to put the prompt into a model and then see whether the model generated toxic content from it.</p>
+<h2 id="the-models">The Models</h2>
+<p>The models used here were GPTs 1,2, as well as CTRL and CTRL-W (I’ve no real idea what these two are, the latter was trained on just Wikipedia though). All of them had the ability to generate toxic content from non-toxic prompts with a probability of around 0.5 – which is quite alarming.</p>
+<p>This is probably down to a few reasons:</p>
+<ol type="1">
+<li>There will be toxic data in the pre-training models. GPT was trained on many, many large bodies of text data, including common crawl and web text. I doubt anyone has checked all 429 billion language token to check whether it was all PC.</li>
+<li>Perspective API is a very strict API to use for toxic comments, as mentioned above.</li>
+</ol>
+<h2 id="can-we-detoxify-these-models">Can we detoxify these models?</h2>
+<p>We can, but there’s varying levels of accessibility of these methods. Some involve pre-training without certain data and making sure you’re using datasets which don’t have toxic text in them (<strong>Domain-Adaptive Pretraining</strong>).</p>
+<p>Additionally, you can use <strong>Attribute Conditioning</strong> – label data with tags with tokens &lt;toxic/&gt;/&lt;non-toxic/&gt; and labelling you prompts with &lt;non-toxic/&gt; to try and get the model to give you a non-toxic prompt.</p>
+<p>There are a group of ‘decoding-based detoxification’ methods as well – these include very basic ones like <strong>word filtering</strong> (telling the model that it can’t use certain words). To others that are more involved, such as vocabulary shifting where you give each token’s unnormalized logits a toxicity score and boosting value, <span class="math inline">\beta W \cdot t</span>.</p>
+<p>The most involved is <strong>PPLM</strong>. This alters past and present hidden representations to try and get more desirable outputs. In the table provided by the paper, PPLM performs best in expected maximum toxicity and probability of toxic output (i.e. these are the lowest scores among all the methods). The paper says Dathathri et al. 2020 (Plug and play language models: A simple approach to controlled text generation) provides more details of the method.</p>
+<figure>
+<img src="/assets/images/data_science/llm_diary/articles/real_toxicity_prompts/detoxifying_table.png" alt="Detoxifying results" /><figcaption>Detoxifying results</figcaption>
+</figure>
+<h2 id="interesting-notes-from-the-paper">Interesting Notes from the paper</h2>
+<p>It’s very interesting seeing a paper from 2020 be this on-the-money with discussions over toxicity in autoregressive generative models, detailing the need for training data to be examined and governed properly before going into a model.</p>
+<p>Something I worry about in my line of work is that the governance infrastructures of companies now has to be as agile as those who want to build the models, however care needs to be made to make sure we don’t end up with a lot of half-baked policies leading to further corporate irresponsibility around this.</p>
+<p>Something I certainly will be investigating further is the <em>“Effectiveness of ‘Forgetting’ toxicity”</em> part of Section 7, TOFU is a recent framework built around unlearning of data and I want to see if that could be applied to toxicity (the original TOFU paper mainly discusses it for copyright purposes). As boring as it is, while the models are getting fancier, data is still the prime ruler over model quality.</p>
+<p>On that subject, Section 6 goes into an interesting exploration over news sources’ factual reliability and how that correlated with toxicity. As expected, these two are negatively correlated, with a spearman coefficient of <span class="math inline">\rho = -0.35</span>. One question to ask here, however, is how reliability was judged and calculated. This isn’t covered in the paper.</p>
+<figure>
+<img src="../../../images/data_science/llm_diary/articles/real_toxicity_prompts/toxicity_factual_correlation.png" alt="Factual Reliability Vs Toxicity Precentage" /><figcaption>Factual Reliability Vs Toxicity Precentage</figcaption>
+</figure>
+<p>Additionally, It is noted 12% of Open Web Text Crawl (OWTC) comes from news sites with mixed or low reliability, with an added 3% of OWTC coming from quarantined (you can see, but can’t post in) or banned subreddits. That’s 15% of OWTC at least which is going to be rift with questionable content!</p>
+<p>Overall, this is definitely worth a read as a paper because of the very relevant questions around ethical due diligence that still apply for people working in the field today. There’s no easy answer to how companies deal with the fact that pre-trained models have some amount of questionable data, but this still continues to evolve as a field.</p>
+</body>
+</html>

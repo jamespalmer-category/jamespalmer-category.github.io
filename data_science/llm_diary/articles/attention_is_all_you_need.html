@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>attention_is_all_you_need</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <script src="/usr/lib/nodejs/katex/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    var mathElements = document.getElementsByClassName("math");
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") { katex.render(texText.data, mathElements[i], { displayMode: mathElements[i].classList.contains("display"), throwOnError: false } );
+    }}});</script>
+  <link rel="stylesheet" href="/usr/lib/nodejs/katex/dist/katex.min.css" />
+</head>
+<body>
+<nav id="TOC">
+<ul>
+<li><a href="#attention-is-all-you-need-2017">Attention is all you need (2017)</a><ul>
+<li><a href="#what-is-attention">What is attention?</a></li>
+<li><a href="#what-makes-it-multi-head">What makes it multi-head?</a></li>
+<li><a href="#what-is-self-attention-the-type-used-here">What is self-attention? The type used here?</a></li>
+<li><a href="#word-on-group-normalization">Word on Group Normalization</a></li>
+<li><a href="#questions-that-i-need-to-follow-up-on">Questions that I need to follow up on</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="attention-is-all-you-need-2017">Attention is all you need (2017)</h1>
+<p><a href="https://arxiv.org/pdf/1706.03762.pdf">The original paper</a></p>
+<p>The reason I came to this paper first is because it’s the one that introduced the transformer, the key to understanding how LLM architecture works. The number one picture you’ll always see for the architecture is the one below:</p>
+<figure>
+<img src="/assets/images/data_science/llm_diary/articles/attention_is_all_you_need/transformer_architecture.png" alt="Transformer Architecture" /><figcaption>Transformer Architecture</figcaption>
+</figure>
+<p>This comes straight from the paper itself and is very clear, hence why it is the go-to image for describing transformer architecture. However, there are a key questions to ask from this picture: <strong>What is “Multi-head attention?”</strong></p>
+<h2 id="what-is-attention">What is attention?</h2>
+<p>Attention can be put rather nicely into a small mathematical equation:</p>
+<p><span class="math display"> \text{attention}(Q,K,V) = \text{softmax}(\frac{QK^{T}}{\sqrt{d_k}})V</span></p>
+<p>I say “rather nicely” mainly because the equation is concise. This doesn’t really say anything about what it is doing. <span class="math inline">Q,K,V</span> are all vectors in <span class="math inline">\mathbb{R}^{n}</span> which are effectively an encoded “query”, “key” and “value”. These are never really explained much in the paper and I mainly assume they were ubiquitous during the time of its writing. From reading “the illustrated transformer” - they are described as “abstractions” of these concepts - which I take to mean vector encodings. In an LLM context, I imagine this to be prompt, context and output. I could be wrong though.</p>
+<p>Worth noting the <span class="math inline">\sqrt{d_k}</span> is a scale factor where <span class="math inline">d_k</span> is the dimension of the vectors, as we want to make sure we don’t get any issues with vanishing/exploding gradients.</p>
+<h2 id="what-makes-it-multi-head">What makes it multi-head?</h2>
+<p>To make it multi-headed, we project the vectors into multiple different (sub-?)spaces and then apply attention on these projections and concatenate the resulting vectors together.</p>
+<h2 id="what-is-self-attention-the-type-used-here">What is self-attention? The type used here?</h2>
+<p>This is where the query, key and value are provided from the same place. “The illustrated transformer” describes self-attention as the ability to take a sentence and figure out what words are being referred to by one particular word in the sentence.</p>
+<p>We also have “encoder-decoder attention” which corresponds to the arrow coming out of the left cell and into the right cell. This is where the keys and queries come from the previous encoder-decoder.</p>
+<h2 id="word-on-group-normalization">Word on Group Normalization</h2>
+<p>In the case of training LLMs, the normalisation used is called “Group Normalization”, which was first written about by meta researchers in 2020. The idea behind it is when normalising over a batch to get a mean and standard deviation over it, they wanted to find a way that wasn’t dependent on batch dimension - as this lead to batch normalization increasing in error. Instead, you take your samples and split them into different “groups” of channels and average over them - this mitigates the issue but I’m not 100% clear how.</p>
+<h2 id="questions-that-i-need-to-follow-up-on">Questions that I need to follow up on</h2>
+<ul>
+<li>How does parrallelistion work in practise?</li>
+<li>What does encoder-decoder stuff actually do?</li>
+<li>What do Q,K and V actually look like in practise?</li>
+<li>What is byte-pair encoding and how is it done?</li>
+<li>What makes “Retentive Networks” so special?</li>
+<li>What is “perplexity” and why is it used as a metric?</li>
+</ul>
+</body>
+</html>

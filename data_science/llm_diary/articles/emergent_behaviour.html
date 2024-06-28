@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>emergent_behaviour</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <script src="/usr/lib/nodejs/katex/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    var mathElements = document.getElementsByClassName("math");
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") { katex.render(texText.data, mathElements[i], { displayMode: mathElements[i].classList.contains("display"), throwOnError: false } );
+    }}});</script>
+  <link rel="stylesheet" href="/usr/lib/nodejs/katex/dist/katex.min.css" />
+</head>
+<body>
+<nav id="TOC">
+<ul>
+<li><a href="#emergent-abilities-of-large-language-models">Emergent Abilities of Large Language Models</a></li>
+</ul>
+</nav>
+<h1 id="emergent-abilities-of-large-language-models">Emergent Abilities of Large Language Models</h1>
+<p><a href="https://arxiv.org/pdf/2206.07682">The original paper</a> <a href="https://arxiv.org/pdf/2304.15004">Are Emergent Abilities of Large Language Models a Mirage?</a></p>
+<p>Emergent behaviour has many different definitions, due to the fact that it is a multi-disciplinary term. You may’ve seen Sam Altman use the word without defining it when he claimed that the GPT models produced by his Open AI show that “intelligence is an emergent property of matter”. </p>
+<p>Emergence is a topic within Philosophy of Mind. Had I gone to all my Philosophy of Mind lectures as an undergraduate, I may well have been able to discuss it more. Could I remember any Philosophy of Mind, I could at least make it up. The underlying idea is that a property is emergent if it appears in bigger systems. In our case, if an LLM with more parameters/training time/ training dataset size.</p>
+<p>Being someone with formal training in Philosophy who now is a Tech worker, you see a lot of the ‘tech bro’ stereotypes love to invoke any sort of philosophy into what they do to appear less narrow-sighted than they usually are. </p>
+<p>This is mainly a symptom of Big Tech workers and start-up founders, where waffle is somewhat the name of the game. At least with financial services you don’t have as many people pretending they’ve read about ethics until the regulator hit them (see 2008). </p>
+<p>I remember in my Uni years the only one ‘tech bro’ stereotype I came across recommended the Future of Humanity Institute as a good place to get speakers in from. Controversy since has led to them being shut down, although some may think they’ll be back in one shape or another.</p>
+<p>Given all of the above, I wanted to read a bit about the origins of people claiming LLMs had “emergent” properties. The route case I can find is the paper of the same title as this article - where emergence is measured based on training time. The idea is that <a href="https://en.wikipedia.org/wiki/Prompt_engineering">few-shot prompting</a> is an emergent property of LLMs, which is shown via a number of graphs depicting the ability of six LLMs to complete various tasks of different domains.</p>
+<p>Put Graph here</p>
+<p>Effectively, due to the sharp uplift that seems to happen at <span class="math inline">10^{22}</span> training FLOPs (floating-point operations per second), after seeingly random behaviour. In theory - this is in keeping with our definition of emergence!</p>
+<p>These intial graphs, however, do look a bit suspect. While the graph shows a linear growth in accuracy, it appears to be perhaps more of a logarithmic growth in reality due to the fact that the x-axis shows we’re going from <span class="math inline">10^{22}</span> to <span class="math inline">10^{24}</span> - which is an absolutely enormous leap! Granted, scale aside we’re still looking at some form of growth after random behaviour.</p>
+<p>In a paper released the following year, Stanford scholars wrote “Are Emergent Abilities of Langauge Models a Mirage?” Also referenced above. This raises a key insight into the discussion of emergence - as Schaeffer et al. decide to question whether the metric we’re using to measure emergence is the correct one to use in the first place.</p>
+<p>Additional to the discussions above, I’d like to add my own two cents. I think that calling any property emergent where we’re measuring over time seems initially weird to me, I’d like to see if this has been done in other fields in a sensible way as well.</p>
+<p>Once monkeys produce the works of Shakespeare we can’t really claim that was an “emergent” property of the monkeys bashing the typewriters. Emergence makes more sense used with parameters in my mind than with training data or training time - given it feels like we’re saying something more about the models themselves rather than any potential overfitting/ double dipping phenomenon with regular neural network parameters.</p>
+<p>The comparison does feel disingenuous, given that the monkies would then probably go back to producing random content, but I think the key point is that time doesn’t feel like the best metric to use here. I do think a key takeaway from Schaeffer et al. is the fact that if we’re going to measure a linear metric such as training time, the metric we use to measure “emergence” should be linear. Otherwise, all we’re saying is that we’ve reached some sort of learning threshold that the model can only really break through after a lot of training.</p>
+<p>Perhaps the worst thing you could say about the initial paper is that it feels like they’ve almost re-discovered how model training works - the initial weights are obviously never going to be completely wrong but it will take time to start making more and more correct predictions as we swim from randomness to credible prediction.</p>
+</body>
+</html>

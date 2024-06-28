@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>retentive_network</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <script src="/usr/lib/nodejs/katex/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    var mathElements = document.getElementsByClassName("math");
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") { katex.render(texText.data, mathElements[i], { displayMode: mathElements[i].classList.contains("display"), throwOnError: false } );
+    }}});</script>
+  <link rel="stylesheet" href="/usr/lib/nodejs/katex/dist/katex.min.css" />
+</head>
+<body>
+<nav id="TOC">
+<ul>
+<li><a href="#retentive-network-a-successor-to-transformer-architecture-for-large-language-models-2023">Retentive Network: A Successor to Transformer Architecture for Large Language Models (2023)</a><ul>
+<li><a href="#what-are-the-issues-with-transformers">What are the issues with Transformers?</a></li>
+<li><a href="#what-is-special-about-retentive-networks">What is special about Retentive Networks?</a></li>
+<li><a href="#how-do-we-put-this-into-a-full-neural-network">How do we put this into a full Neural Network?</a></li>
+<li><a href="#questions">Questions</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="retentive-network-a-successor-to-transformer-architecture-for-large-language-models-2023">Retentive Network: A Successor to Transformer Architecture for Large Language Models (2023)</h1>
+<p><a href="https://arxiv.org/pdf/2307.08621.pdf">The original paper</a></p>
+<p>Microsoft researchers found a new way to train LLMs faster - Retentive Networks (RetNets). I’ve not seen anywhere actually use this yet in production but I would be very interested to see if the results hold up.</p>
+<h2 id="what-are-the-issues-with-transformers">What are the issues with Transformers?</h2>
+<p>Their inference time is <span class="math inline">O(N^2)</span>, additionally they have <span class="math inline">O(N)</span> memory complexity as well. Many papers and architectures have tried to cut these times down, however this would always come at the cost of performance. RetNets, however, are <span class="math inline">O(1)</span> in memory and <span class="math inline">O(N)</span> in inference time. The following table is taken from the paper itself.</p>
+<figure>
+<img src="/assets/images/data_science/llm_diary/articles/retentive_network/retnet_table.png" alt="Architecture Performance Table" /><figcaption>Architecture Performance Table</figcaption>
+</figure>
+<p>The bottleneck in the transformer is attention. Specifically, the softmax function applied after the dot product between vectors <span class="math inline">K</span> and <span class="math inline">Q</span> causes the <span class="math inline">O(N^2)</span> complexity. The linear transformer took this out and only used the dot product in the formula for attention, however its performance wasn’t anywhere near as good.</p>
+<h2 id="what-is-special-about-retentive-networks">What is special about Retentive Networks?</h2>
+<p>The thing done differnetly here compared to other architectures is a “retention” formula, derived in the paper:</p>
+<p>For input <span class="math inline">X</span> projected to space <span class="math inline">n</span>, we have <span class="math inline">v(n) = X_n \cdot \omega_{V}</span>. Additionally, we make our matricies <span class="math inline">K</span> and <span class="math inline">Q</span> “content aware”, by setting them to <span class="math inline">Q = XW_{Q}, K = XW_{K}</span>. NB: whenever we have a <span class="math inline">W</span> matrix, it usually corresponds to weights. Now, if we let <span class="math inline">\gamma</span> and <span class="math inline">\theta</span> be vecotrs in <span class="math inline">\mathbb{R}^{n}</span>, we have equations</p>
+<p><span class="math display"> s_n = AS_{n-1} + K_{n}^{T} v_n</span> <span class="math display"> o_n = Q_n s_n = \sum_{m=1}^{n} \gamma^{n-m} (Q_n e^{in\theta}) (K_{m}^{T} e^{im\theta})^{\dagger} v_{m}</span></p>
+<p>Which form our retention mechanism and allow for recurrence (according to the paper, I’m not certain what that means).</p>
+<p>This gives our output for each step of the sequence. If we wanted to describe a retentive layer in Matrix terms, it would look like the following:</p>
+<p><span class="math display"> X = (QK^{T} \odot D)V</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\odot</span> is the Hadamard product <span class="math inline">(A \odot B)_{ij} = (A_{ij})(B_{ij})</span></li>
+<li><span class="math inline">Q = XW_{Q} \odot \Theta</span></li>
+<li><span class="math inline">K = XW_{K} \odot \bar{\Theta}</span></li>
+<li><span class="math inline">V = XW_{V}</span></li>
+<li><span class="math inline">\Theta = e^{in\theta}</span></li>
+<li><span class="math inline">D_{nm}=\begin{cases} \gamma^{n-m}, n \geq m\\ 0, n &lt; m \end{cases}</span></li>
+</ul>
+<p>After the transformation <span class="math inline">X</span>, group normalization is used and we get the output of our layer.</p>
+<h2 id="how-do-we-put-this-into-a-full-neural-network">How do we put this into a full Neural Network?</h2>
+<p>Similar to attention, we can mutli-head this. We can also use multi-scale retention, where we use a different <span class="math inline">\gamma</span> for each layer.</p>
+<ul>
+<li><span class="math inline">\text{head}_i = \text{Retention}(X,\gamma_i)</span></li>
+<li><span class="math inline">Y = \text{GroupNorm}(\text{Concat}(\text{head}_1, \dots, \text{head}_n))</span></li>
+<li><span class="math inline">\text{MSR}(X) = (\text{swish}(XW_G) \odot Y)W_o</span></li>
+</ul>
+<p>We use this and a feed-forward NN. We thus have the following equations: * <span class="math inline">Y^{l} = \text{MSR}(\text{LN}(X^{i}))+X^{l}</span> * <span class="math inline">X^{l+1} = \text{FFN}(\text{LN}(Y^{l})) + Y^{l}</span></p>
+<p>Where LN is layer normalization and <span class="math inline">\text{FFN}(X) = \text{gelu}(XW_1)W_2</span></p>
+<p>For training purposes, you can chunk up the sequences and train on those smaller batches.</p>
+<h2 id="questions">Questions</h2>
+<ul>
+<li>What metrics are used to judge the performance of an LLM?</li>
+</ul>
+</body>
+</html>
